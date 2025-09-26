@@ -547,6 +547,7 @@ def compute_policy_loss_archer(
     negative_clip_ratio_c=3.0,
     positive_clip_ratio_c=3.0,
     use_dynamic_clip=False,
+    loss_agg_mode: str = "token-mean",
 ):
     assert negative_clip_ratio_c > 1.0, "The negative_clip_ratio_c should be greater than 1.0," + f" but get the value: {negative_clip_ratio_c}."
     assert positive_clip_ratio_c > 1.0, "The positive_clip_ratio_c should be greater than 1.0," + f" but get the value: {positive_clip_ratio_c}."
@@ -577,6 +578,7 @@ def compute_policy_loss_archer(
     positive_pg_losses = torch.where(positive_clipped_mask, positive_pg_losses_dual, positive_pg_losses_clip)
 
     pg_losses = torch.where(advantages < 0, negative_pg_losses, positive_pg_losses)
+    pg_loss = agg_loss(loss_mat=pg_losses, loss_mask=response_mask, loss_agg_mode=loss_agg_mode)
 
     return pg_loss, pg_clipfrac_upper, pg_clipfrac_lower, negative_pg_clipfrac_dual, positive_pg_clipfrac_dual
 
