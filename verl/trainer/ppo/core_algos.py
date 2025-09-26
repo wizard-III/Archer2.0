@@ -534,6 +534,53 @@ def agg_loss(loss_mat: torch.Tensor, loss_mask: torch.Tensor, loss_agg_mode: str
     return loss
 
 
+def compute_policy_loss_archer(
+    old_log_prob,
+    log_prob,
+    advantages,
+    response_mask,
+    high_entropy_mask,
+    negative_low_entropy_clip_ratio_low=0.2,
+    negative_high_entropy_clip_ratio_low=0.4,
+    positive_low_entropy_clip_ratio_high=0.2,
+    positive_high_entropy_clip_ratio_high=0.4,
+    negative_clip_ratio_c=3.0,
+    positive_clip_ratio_c=3.0,
+    use_dynamic_clip=False,
+):
+    assert negative_clip_ratio_c > 1.0, "The negative_clip_ratio_c should be greater than 1.0," + f" but get the value: {negative_clip_ratio_c}."
+    assert positive_clip_ratio_c > 1.0, "The positive_clip_ratio_c should be greater than 1.0," + f" but get the value: {positive_clip_ratio_c}."
+
+    ratio = torch.exp(torch.clamp(log_prob - old_log_prob, min=-20.0, max=20.0))
+
+    negative_clip_ratio = torch.where(high_entropy_mask, torch.clamp(ratio, min=1-negative_low_entropy_clip_ratio_low, max=None), torch.clamp(ratio, min=1-negative_high_entropy_clip_ratio_low, max=None))
+    positive_clip_ratio = torch.where(high_entropy_mask, torch.clamp(ratio, min=None, max=1+positive_low_entropy_clip_ratio_high), torch.clamp(ratio, min=None, max=1+positive_high_entropy_clip_ratio_high))
+
+    clip_ratio = torch.where(advantages < 0, negative_clip_ratio, positive_clip_ratio)
+
+    pg_clipfrac_upper = verl_F.masked_mean(torch.gt(ratio, clip_ratio).float(), response_mask)
+    pg_clipfrac_lower = verl_F.masked_mean(torch.lt(ratio, clip_ratio).float(), response_mask)
+
+    negative_pg_losses_clip = -advantages * negative_clip_ratio
+    positive_pg_losses_clip = -advantages * (positive_clip_ratio / positive_clip_ratio.detach()) / positive_clip_ratio.detach()
+
+    negative_dual_clip_ratio = torch.clamp(negative_clip_ratio, min=None, max=negative_clip_ratio_c)
+    negative_clipped_mask = torch.gt(negative_clip_ratio, negative_dual_clip_ratio)
+    negative_pg_clipfrac_dual = verl_F.masked_mean(negative_clipped_mask.float(), response_mask & (advantages < 0))
+    negative_pg_losses_dual = -advantages * negative_dual_clip_ratio.detach() * log_prob
+    negative_pg_losses = torch.where(negative_clipped_mask, negative_pg_losses_dual, negative_pg_losses_clip)
+
+    positive_dual_clip_ratio = torch.clamp(1/positive_clip_ratio, min=None, max=positive_clip_ratio_c)
+    positive_clipped_mask = torch.gt(1/positive_clip_ratio, positive_dual_clip_ratio)
+    positive_pg_clipfrac_dual = verl_F.masked_mean(positive_clipped_mask.float(), response_mask & (advantages > 0))
+    positive_pg_losses_dual = -advantages * positive_dual_clip_ratio.detach() * log_prob
+    positive_pg_losses = torch.where(positive_clipped_mask, positive_pg_losses_dual, positive_pg_losses_clip)
+
+    pg_losses = torch.where(advantages < 0, negative_pg_losses, positive_pg_losses)
+
+    return pg_loss, pg_clipfrac_upper, pg_clipfrac_lower, negative_pg_clipfrac_dual, positive_pg_clipfrac_dual
+
+
 def compute_policy_loss(
     old_log_prob,
     log_prob,

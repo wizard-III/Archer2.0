@@ -28,7 +28,7 @@ from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 
 import verl.utils.torch_functional as verl_F
 from verl import DataProto
-from verl.trainer.ppo.core_algos import agg_loss, compute_policy_loss, kl_penalty
+from verl.trainer.ppo.core_algos import agg_loss, compute_policy_loss_archer, compute_policy_loss, kl_penalty
 from verl.utils.debug import GPUMemoryLogger
 from verl.utils.device import get_device_id, get_device_name, is_cuda_available, is_npu_available
 from verl.utils.fsdp_utils import FSDPModule, fsdp2_clip_grad_norm_
@@ -400,32 +400,46 @@ class DataParallelPPOActor(BasePPOActor):
                     entropy, log_prob = self._forward_micro_batch(micro_batch=data, temperature=temperature, calculate_entropy=calculate_entropy)
 
                     # high entropy token mask
-                    high_entropy_mask, low_entropy_mask = None, None
-                    if self.config.get("use_token_entropy_separate", False):
-                        with torch.no_grad():
-                            token_entropy_quantile = self.config.get("token_entropy_quantile", 0.8)
-                            masked_entropy = torch.where(response_mask.bool(), entropy.detach(), torch.nan)  # (bsz, response_length)
-                            q80 = torch.nanquantile(masked_entropy, q=token_entropy_quantile, dim=-1, keepdim=True)  # (bsz, 1)
-                            high_entropy_mask = (masked_entropy <= q80) & response_mask # only low entropy token is True
-                            low_entropy_mask = (masked_entropy > q80) & response_mask #  only high entropy token is True
+                    with torch.no_grad():
+                        token_entropy_quantile = self.config.get("token_entropy_quantile", 0.8)
+                        masked_entropy = torch.where(response_mask.bool(), entropy.detach(), torch.nan)  # (bsz, response_length)
+                        q80 = torch.nanquantile(masked_entropy, q=token_entropy_quantile, dim=-1, keepdim=True)  # (bsz, 1)
+                        high_entropy_mask = (masked_entropy <= q80) & response_mask # only low entropy token is True
+                        low_entropy_mask = (masked_entropy > q80) & response_mask #  only high entropy token is True
 
-                    pg_loss, pg_clipfrac, ppo_kl, pg_clipfrac_lower = compute_policy_loss(
-                        old_log_prob=old_log_prob,
-                        log_prob=log_prob,
-                        advantages=advantages,
-                        response_mask=response_mask,
-                        use_token_entropy_separate=self.config.get("use_token_entropy_separate", False),
-                        high_entropy_mask=high_entropy_mask,
-                        cliprange=clip_ratio,
-                        cliprange_low=clip_ratio_low,
-                        cliprange_high=clip_ratio_high,
-                        low_entropy_clip_ratio_low=self.config.get("low_entropy_clip_ratio_low", clip_ratio_low),
-                        low_entropy_clip_ratio_high=self.config.get("low_entropy_clip_ratio_high", clip_ratio_low),
-                        high_entropy_clip_ratio_low=self.config.get("high_entropy_clip_ratio_low", clip_ratio_high),
-                        high_entropy_clip_ratio_high=self.config.get("high_entropy_clip_ratio_high", clip_ratio_high),
-                        clip_ratio_c=clip_ratio_c,
-                        loss_agg_mode=loss_agg_mode,
-                    )
+                    if self.config.get("use_archer_policy_loss", False):
+                        pg_loss, pg_clipfrac_upper, pg_clipfrac_lower, negative_pg_clipfrac_dual, positive_pg_clipfrac_dual = compute_policy_loss_archer(
+                            old_log_prob=old_log_prob,
+                            log_prob=log_prob,
+                            advantages=advantages,
+                            response_mask=response_mask,
+                            high_entropy_mask=high_entropy_mask,
+                            negative_low_entropy_clip_ratio_low=0.2,
+                            negative_high_entropy_clip_ratio_low=0.4,
+                            positive_low_entropy_clip_ratio_high=0.2,
+                            positive_high_entropy_clip_ratio_high=0.4,
+                            negative_clip_ratio_c=3.0,
+                            positive_clip_ratio_c=3.0,
+                            use_dynamic_clip=self.config.get("use_dynamic_clip", False),
+                        )
+                    else:
+                        pg_loss, pg_clipfrac, ppo_kl, pg_clipfrac_lower = compute_policy_loss(
+                            old_log_prob=old_log_prob,
+                            log_prob=log_prob,
+                            advantages=advantages,
+                            response_mask=response_mask,
+                            use_token_entropy_separate=self.config.get("use_token_entropy_separate", False),
+                            high_entropy_mask=high_entropy_mask,
+                            cliprange=clip_ratio,
+                            cliprange_low=clip_ratio_low,
+                            cliprange_high=clip_ratio_high,
+                            low_entropy_clip_ratio_low=self.config.get("low_entropy_clip_ratio_low", clip_ratio_low),
+                            low_entropy_clip_ratio_high=self.config.get("low_entropy_clip_ratio_high", clip_ratio_low),
+                            high_entropy_clip_ratio_low=self.config.get("high_entropy_clip_ratio_low", clip_ratio_high),
+                            high_entropy_clip_ratio_high=self.config.get("high_entropy_clip_ratio_high", clip_ratio_high),
+                            clip_ratio_c=clip_ratio_c,
+                            loss_agg_mode=loss_agg_mode,
+                        )
 
                     if entropy_coeff != 0:
                         entropy_loss = agg_loss(loss_mat=entropy, loss_mask=response_mask, loss_agg_mode=loss_agg_mode)
@@ -462,15 +476,25 @@ class DataParallelPPOActor(BasePPOActor):
                         loss = policy_loss / self.gradient_accumulation
                     loss.backward()
 
-                    action_reward = verl_F.masked_sum(log_prob, response_mask) / responses.numel()
+                    if self.config.get("use_archer_policy_loss", False):
+                        data = {
+                            "actor/pg_loss": pg_loss.detach().item(),
+                            "actor/pg_clipfrac_upper": pg_clipfrac_upper.detach().item(),
+                            "actor/pg_clipfrac_lower": pg_clipfrac_lower.detach().item(),
+                            "actor/negative_pg_clipfrac_dual": negative_pg_clipfrac_dual.detach().item(),
+                            "actor/positive_pg_clipfrac_dual": positive_pg_clipfrac_dual.detach().item(),
+                        }
+                    else:
+                        data = {
+                            "actor/pg_loss": pg_loss.detach().item(),
+                            "actor/pg_clipfrac": pg_clipfrac.detach().item(),
+                            "actor/ppo_kl": ppo_kl.detach().item(),
+                            "actor/pg_clipfrac_lower": pg_clipfrac_lower.detach().item(),
+                        }
 
-                    data = {
-                        "actor/pg_loss": pg_loss.detach().item(),
-                        "actor/pg_clipfrac": pg_clipfrac.detach().item(),
-                        "actor/ppo_kl": ppo_kl.detach().item(),
-                        "actor/pg_clipfrac_lower": pg_clipfrac_lower.detach().item(),
-                        'actor/action_reward': action_reward.detach().item(),
-                    }
+                    action_reward = verl_F.masked_sum(log_prob, response_mask) / responses.numel()
+                    data["actor/action_reward"] = action_reward.detach().item()
+
                     append_to_dict(metrics, data)
 
                 grad_norm = self._optimizer_step()

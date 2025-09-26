@@ -58,7 +58,8 @@ infer_ppo_max_token_len=$((max_prompt_length + v_max_response_length))
 offload=False
 
 # Actor
-use_token_entropy_separate=True
+use_archer_policy_loss=True
+use_dynamic_clip=False
 token_entropy_quantile=0.8
 high_entropy_kl_loss_scale_coef=0.0
 low_entropy_clip_ratio_low=0.2
@@ -68,9 +69,6 @@ high_entropy_clip_ratio_high=0.4
 
 # Trainer
 use_overlong_filter=False
-
-# Algorithm
-use_archer_policy_loss=True
 
 
 python -m dapo.main_dapo \
@@ -96,7 +94,6 @@ python -m dapo.main_dapo \
     actor_rollout_ref.model.use_remove_padding=True \
     actor_rollout_ref.actor.use_dynamic_bsz=${use_dynamic_bsz} \
     actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=${micro_batch_size_per_gpu} \
-    +actor_rollout_ref.actor.use_token_entropy_separate=${use_token_entropy_separate} \
     +actor_rollout_ref.actor.high_entropy_kl_loss_scale_coef=${high_entropy_kl_loss_scale_coef} \
     +actor_rollout_ref.actor.low_entropy_clip_ratio_low=${low_entropy_clip_ratio_low} \
     +actor_rollout_ref.actor.low_entropy_clip_ratio_high=${low_entropy_clip_ratio_high} \
