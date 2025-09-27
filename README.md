@@ -1,15 +1,8 @@
 ![status](https://img.shields.io/badge/status-WIP-yellow)  
-![license](https://img.shields.io/badge/license-MIT-blue)  
-![version](https://img.shields.io/badge/version-0.0.1-lightgrey)
 
----
+# 🚧 Work in Progress
 
-## 📌 Status
-This repository is **under construction**.  
-Features, structure, and documentation are still in progress.  
-⚠️ Not ready for production use.
-
----
+This project is currently under development. Features, structure, and documentation may change frequently.
 
 
 <div align="center">
