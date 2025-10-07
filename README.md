@@ -132,14 +132,6 @@ cd ArcherCodeR
 pip install -e .
 ```
 
-### Data Preparation
-
-Download the training and test data from Hugging Face.
-
-```bash
-python tools/download_datasets.py
-```
-
 #### Initialize Ray Cluster
 
 We have provided a one-click script to initialize Ray environments on any number of machines. Run the following command on the head node:
@@ -164,6 +156,13 @@ bash ./scripts/train/run_archer_qwen2.5_1.5b_code.sh
 
 #### Auto Eval Pipeline
 
+```bash
+bash ./tools/run_eval_pipeline.sh
+```
+
+```bash
+bash ./tools/run_lcb_eval.sh
+```
 
 
 #### Head-On Eval

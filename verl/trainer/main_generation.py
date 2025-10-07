@@ -12,6 +12,7 @@ import ray
 import numpy as np
 import hydra
 import os
+import wandb
 from tabulate import tabulate
 
 os.environ["NCCL_DEBUG"] = "WARN"
@@ -211,7 +212,9 @@ def main_task(config):
         makedirs(output_dir, exist_ok=True)
         dataset.to_parquet(config.data.output_path)
 
-    output_dir = os.path.dirname(config.data.output_path)
+    if "livecodebench" in config.data.path:
+        return
+
     # Compute evaluation metrics
     prompts = dataset[config.data.prompt_key]
     responses = dataset['responses']  # Using the generated responses
@@ -249,7 +252,7 @@ def main_task(config):
     total_scores = np.array(total_scores).reshape((-1, n_samples))
     pass_at_n = np.mean(np.max(total_scores, axis=-1))
     pass_at_1 = np.mean(total_scores)
-    
+
     # Save metrics to CSV
     csv_path = config.data.output_path + '.pass.csv'
     dataset_name = os.path.basename(config.data.path)
@@ -280,6 +283,13 @@ def main_task(config):
     import json
     with open(results_path, 'w') as f:
         json.dump(total_scores, f)
+
+    if config.trainer.get("use_wandb", True):
+        wandb.init(project=config.trainer.project_name, name=config.trainer.experiment_name, id=config.trainer.experiment_name, resume="allow", allow_val_change=True)
+        wandb.define_metric(f"val/{config.trainer.task_name}/pass@1", step_metric="global_step")
+        wandb.define_metric(f"val/{config.trainer.task_name}/pass@{n_samples}", step_metric="global_step")
+        wandb.log({f'val/{config.trainer.task_name}/pass@1': pass_at_1, f'val/{config.trainer.task_name}/pass@{n_samples}': pass_at_n, "global_step": config.trainer.global_step})
+        wandb.finish(exit_code=0)
 
 
 if __name__ == "__main__":
