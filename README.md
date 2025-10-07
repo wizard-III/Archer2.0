@@ -25,26 +25,14 @@
 
 ## Overview
 
-The Archer series focuses on research into RL algorithms and training for medium and small-scale models, aiming to deepen the community's understanding of the fundamental principles of reinforcement learning (RL) on large language models (LLMs). All released content will be comprehensively open-sourced to advance community research development.
+Archer2.0 evolves from its predecessor by introducing Asymmetric Importance Sampling Policy Optimization (ASPO), which overcomes fundamental PPO-Clip limitations to prevent premature convergence and unlock greater RL potential.
 
-<!-- <div align="center">
-<img src="assets/combined_math_code_benchmarks.png" width="100%"/>
-
-<sub>Archer significantly improves the reasoning performance upon DAPO and outperforms previous 1.5B-level SOTA reasoning models.</sub>
-</div> -->
-
-**Archer** is an open-source initiative enhancing reasoning in large language models through scalable, rule-governed reinforcement learning. We provide full-stack reproducibility including:
-
-- Training code and pipelines
-- Curated datasets
-- Trained models
-- Complete training logs
-
-**Current Models**:
-- **[Archer2.0-Code-1.5B-Preview](https://huggingface.co/Fate-Zero/Archer2.0-Code-1.5B-Preview)** - SOTA among similarly-sized models.
+<div align="center">
+<img src="assets/archer2.0.png" width="100%"/>
+</div>
 
 ## Evaluation
-We conduct evaluation on both mathematical and coding benchmarks. Due to the high variance of the outputs from reasoning models, we report avg@K (pass@1 performance averaged over K outputs) and pass@K for each benchmark. The detailed results are shown in the table below.
+We conduct evaluation on LCB v5 and v6 benchmarks. Due to the high variance of the outputs from reasoning models, we report avg@K (pass@1 performance averaged over K outputs) and pass@K for each benchmark. The detailed results are shown in the table below.
 
 <table>
   <thead>
