@@ -174,7 +174,7 @@ bash ./scripts/eval/run_eval.sh
 
 ##### Step 3: Run Evaluation
 
-Navigate to line 245 in LiveCodeBench/blob/main/lcb_runner/evaluation/compute_code_generation_metrics_v5.py and update the parquet_file path to point to the result file generated in Step 2. 
+Navigate to line 245 in [LiveCodeBench/blob/main/lcb_runner/evaluation/compute_code_generation_metrics_v5.py](https://github.com/wizard-III/LiveCodeBench/blob/main/lcb_runner/evaluation/compute_code_generation_metrics_v5.py#L245) and update the parquet_file path to point to the result file generated in Step 2. 
 
 Execute the following script to evaluate performance on the LiveCodeBench v5 benchmark:
 
