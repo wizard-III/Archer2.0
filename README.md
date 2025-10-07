@@ -25,7 +25,7 @@
 
 ## Overview
 
-Archer2.0 evolves from its predecessor by introducing ASPO(Asymmetric Importance Sampling Policy Optimization), which overcomes fundamental PPO-Clip limitations to prevent premature convergence and unlock greater RL potential.
+Archer2.0 evolves from its predecessor by introducing Asymmetric Importance Sampling Policy Optimization, which overcomes fundamental PPO-Clip limitations to prevent premature convergence and unlock greater RL potential.
 
 <div align="center">
 <img src="assets/archer2.0.png" width="100%"/>
