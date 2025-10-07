@@ -104,7 +104,7 @@ We currently conduct evaluation on LCB v5 and v6 benchmarks. The detailed result
 
 ## Getting Started
 
-### 1.Installation
+### 1 Installation
 
 ```bash
 # Installing Python 3.10 Environment.
@@ -132,7 +132,7 @@ Note:
 - Please replace your_wandb_api_key in export WANDB_API_KEY=your_wandb_api_key with your actual key.
 - Hostfile locations vary across operating systems (e.g., on my machine, it's located at /etc/mpi/hostfile). Locate the file on your server and modify its content accordingly.
 
-### 2.Training
+### 2 Training
 
 We have currently provided the script and data to reproduce the results of the “Archer2.0-Code-1.5B-Preview”.
 
@@ -140,7 +140,7 @@ We have currently provided the script and data to reproduce the results of the �
 bash ./scripts/train/run_archer2.0_qwen2.5_1.5b_code.sh
 ```
 
-### 3.Evaluation
+### 3 Evaluation
 
 #### 3.1 Automated Evaluation Pipeline
 To automatically scan a specified directory and evaluate all saved model checkpoints during training, run the following script on a GPU-enabled machine:
