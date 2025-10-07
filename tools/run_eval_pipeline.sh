@@ -164,7 +164,7 @@ run_evaluation() {
     max_prompt_length=$((1024 * 2))
     max_response_length=$((1024 * 32))
 
-    base_dir=/ytech_milm/lixiaoran/data/public/pre-release
+    base_dir=/home/wangjiakang/data/archer
     data_dir=${base_dir}/data/test
     output_dir=${model_path}/actor/hf_model/output
     
