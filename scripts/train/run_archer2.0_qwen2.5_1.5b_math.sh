@@ -4,7 +4,7 @@ set -xeuo pipefail
 nnodes=1
 
 project_name='Archer2.0'
-exp_name='Archer2.0-Qwen2.5-1.5B-Code'
+exp_name='Archer2.0-Qwen2.5-1.5B-Math'
 
 adv_estimator=grpo
 
@@ -35,8 +35,8 @@ train_prompt_mini_bsz=16
 MODEL_PATH=./models/DeepSeek-R1-Distill-Qwen-1.5B
 CKPTS_DIR=./output/${project_name}/${exp_name} && mkdir -p $CKPTS_DIR
 data_dir=./data
-TRAIN_FILE=$data_dir/train/archer2.0-code-1.5b-train.json
-TEST_FILE=$data_dir/test/livecodebench_v5.json
+TRAIN_FILE=$data_dir/train/archer2.0-math-1.5b-train.json
+TEST_FILE=$data_dir/test/aime2025.json
 
 # Algorithm
 n_resp_per_prompt=16
