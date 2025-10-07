@@ -32,7 +32,7 @@ Archer2.0 evolves from its predecessor by introducing Asymmetric Importance Samp
 </div>
 <br>
 
-We currently conduct evaluation on LCB v5 and v6 benchmarks. The detailed results are shown in the table below.
+While our mathematical models are still in training and have not converged, we have evaluated Archer2.0 on the LiveCodeBench v5 and v6 code benchmarks. The results are detailed in the table below.
 
 <table>
   <thead>
