@@ -51,7 +51,7 @@ run_evaluation() {
     experiment_name=$(basename "$(dirname "$model_path")")
     global_step=$(basename "$model_path" | awk -F'_' '{print $3}')
 
-    python /home/wangjiakang/code/LiveCodeBench/lcb_runner/evaluation/compute_code_generation_metrics_online.py \
+    python LiveCodeBench/lcb_runner/evaluation/compute_code_generation_metrics_online.py \
         --eval_file ${model_path}/actor/hf_model/output/livecodebench_v5.parquet \
         --project_name ${project_name} \
         --experiment_name ${experiment_name} \

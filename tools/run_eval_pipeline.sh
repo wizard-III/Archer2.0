@@ -23,12 +23,12 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 # └── ... # 其他模型
 
 MODEL_ROOT="/home/wangjiakang/data/output/Archer2.0"
-LOG_FILE="evaluated_tasks.log"
-CONVERSION_LOG="model_conversion.log"
-
 # 一级目录筛选配置, 使用空格分隔的目录名列表，如 "DAPO-Qwen2.5-1.5B-Math-01 DAPO-Qwen2.5-1.5B-Math-02"
 # 留空则检测所有一级目录
 TARGET_DIRS=${TARGET_DIRS:-"DAPO-Qwen2.5-1.5B-Math-01 DAPO-Qwen2.5-1.5B-Code-01"}  # 通过环境变量设置
+
+LOG_FILE="evaluated_tasks.log"
+CONVERSION_LOG="model_conversion.log"
 
 # 任务与结果文件映射
 declare -A TASK_MAP=(
