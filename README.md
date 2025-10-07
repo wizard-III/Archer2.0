@@ -32,7 +32,7 @@ Archer2.0 evolves from its predecessor by introducing Asymmetric Importance Samp
 </div>
 
 ## Evaluation
-We conduct evaluation on LCB v5 and v6 benchmarks. Due to the high variance of the outputs from reasoning models, we report avg@K (pass@1 performance averaged over K outputs) and pass@K for each benchmark. The detailed results are shown in the table below.
+We currently conduct evaluation on LCB v5 and v6 benchmarks. The detailed results are shown in the table below.
 
 <table>
   <thead>
@@ -142,20 +142,21 @@ bash ./scripts/train/run_archer2.0_qwen2.5_1.5b_code.sh
 
 ### Evaluation
 
-#### Auto Eval Pipeline
+#### Automated Evaluation Pipeline
+To automatically scan a specified directory and evaluate all saved model checkpoints during training, run the following script on a GPU-enabled machine:
 
 ```bash
 bash ./tools/run_eval_pipeline.sh
 ```
+Since code evaluation tasks run on CPU only, we separate the LiveCodeBench evaluation to optimize GPU utilization. Execute the following script on a CPU machine to automatically evaluate the inference results generated in the previous step:
 
 ```bash
 bash ./tools/run_lcb_eval.sh
 ```
 
+#### Head-On Evaluation
 
-#### Head-On Eval
-
-##### Step 1: Convert model format
+##### Step 1: Convert Model Format
 
 Run the following command to convert the model to Hugging Face format:
 
@@ -163,12 +164,22 @@ Run the following command to convert the model to Hugging Face format:
 bash ./tools/model_merge.sh
 ```
 
-##### Step 2: Run evaluation
+##### Step 2: Run Inference
 
-Execute the script below to evaluate model performance on the LiveCodeBench v5 benchmark:
+Execute the script below to generate inference results for the test data:
 
 ```bash
 bash ./scripts/eval/run_eval.sh
+```
+
+##### Step 3: Run Evaluation
+
+Navigate to line 245 in LiveCodeBench/blob/main/lcb_runner/evaluation/compute_code_generation_metrics_v5.py and update the parquet_file path to point to the result file generated in Step 2. 
+
+Execute the following script to evaluate performance on the LiveCodeBench v5 benchmark:
+
+```bash
+python LiveCodeBench/lcb_runner/evaluation/compute_code_generation_metrics_v5.py
 ```
 
 Note: Please update the path parameters in the scripts above as needed.
