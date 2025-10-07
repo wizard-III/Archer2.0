@@ -25,7 +25,7 @@
 
 ## Overview
 
-Archer2.0 marks a significant evolution from its predecessor through the introduction of Asymmetric Importance Sampling Policy Optimization (ASPO), which is designed to overcome the fundamental limitations of PPO-Clip, effectively mitigating issues like entropy collapse and repetitive outputs, preventing premature convergence, and thereby enabling more advanced reinforcement learning capabilities.
+**Archer2.0** marks a significant evolution from its predecessor through the introduction of **Asymmetric Importance Sampling Policy Optimization (ASPO)**, which is designed to overcome the fundamental limitations of **PPO-Clip**, effectively mitigating issues like **entropy collapse** and **repetitive outputs**, preventing **premature convergence**, and thereby enabling more advanced **reinforcement learning** capabilities.
 
 <div align="center">
 <img src="assets/archer2.0.png" width="100%"/>
