@@ -134,10 +134,10 @@ Note:
 
 ### Training
 
-We have currently only provided the script and data to reproduce the results of the “Archer-Code-1.5B”.
+We have currently provided the script and data to reproduce the results of the “Archer2.0-Code-1.5B-Preview”.
 
 ```bash
-bash ./scripts/train/run_archer_qwen2.5_1.5b_code.sh
+bash ./scripts/train/run_archer2.0_qwen2.5_1.5b_code.sh
 ```
 
 ### Evaluation
@@ -175,7 +175,6 @@ Note: Please update the path parameters in the scripts above as needed.
 
 ## Technical Report
 [ASPO: Asymmetric Importance Sampling Policy Optimization](https://rogue-canopy-54a.notion.site/ASPO-Asymmetric-Importance-Sampling-Policy-Optimization-2650e4c8c16a8034a5d3dfec358c9021)
-[Stabilizing Knowledge, Promoting Reasoning: Dual-Token Constraints for RLVR](https://arxiv.org/abs/2507.15778)
 
 ## Acknowledgements
 
