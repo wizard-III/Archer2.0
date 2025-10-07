@@ -142,6 +142,8 @@ bash ./scripts/train/run_archer2.0_qwen2.5_1.5b_code.sh
 
 ### 3 Evaluation
 
+When using the Verl framework for RL training, we observed a consistent discrepancy between the evaluation results produced by the in-training weights and the saved model checkpoints. To ensure the accurate selection of model checkpoints, our evaluation is conducted using the saved checkpoints.
+
 #### 3.1 Automated Evaluation Pipeline
 To automatically scan a specified directory and evaluate all saved model checkpoints during training, run the following script on a GPU-enabled machine:
 
