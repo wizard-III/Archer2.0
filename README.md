@@ -30,6 +30,7 @@ Archer2.0 evolves from its predecessor by introducing Asymmetric Importance Samp
 <div align="center">
 <img src="assets/archer2.0.png" width="100%"/>
 </div>
+<br>
 
 We currently conduct evaluation on LCB v5 and v6 benchmarks. The detailed results are shown in the table below.
 
