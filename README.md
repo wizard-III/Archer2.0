@@ -20,6 +20,7 @@
 [![Model](https://img.shields.io/badge/Model-fcd022?style=for-the-badge&logo=huggingface&logoColor=000&labelColor)](https://huggingface.co/Fate-Zero/Archer2.0-Code-1.5B-Preview)
 [![Data](https://img.shields.io/badge/Data-fcd022?style=for-the-badge&logo=huggingface&logoColor=000&labelColor)](https://huggingface.co/datasets/Fate-Zero/Archer2.0-Code-1.5B)
 [![知乎](https://img.shields.io/badge/知乎-0084FF?style=for-the-badge&logo=zhihu&logoColor=white)](https://zhuanlan.zhihu.com/p/1950989602023244983)
+[![Paper](https://img.shields.io/badge/Paper-%23000000?style=for-the-badge&logo=arxiv&logoColor=000&labelColor=white)](https://arxiv.org/abs/2510.06062)
 
 </div>
 
@@ -187,7 +188,7 @@ python LiveCodeBench/lcb_runner/evaluation/compute_code_generation_metrics_v5.py
 Note: Please update the path parameters in the scripts above as needed.
 
 ## Technical Report
-[ASPO: Asymmetric Importance Sampling Policy Optimization](https://rogue-canopy-54a.notion.site/ASPO-Asymmetric-Importance-Sampling-Policy-Optimization-2650e4c8c16a8034a5d3dfec358c9021)
+[ASPO: Asymmetric Importance Sampling Policy Optimization](https://arxiv.org/abs/2510.06062)
 
 ## Acknowledgements
 
@@ -198,12 +199,14 @@ Note: Please update the path parameters in the scripts above as needed.
 
 Please cite the following:
 ```bibtex
-@misc{ASPO2025,
-  title={ASPO: Asymmetric Importance Sampling Policy Optimization},
-  author={Wang, Jiakang and Liu, Runze and Lin, Lei and Hu, Wenping and Li, Xiu and Zhang, Fuzheng and Zhou, Guorui and Gai, Kun},
-  howpublished={\url{https://rogue-canopy-54a.notion.site/ASPO-Asymmetric-Importance-Sampling-Policy-Optimization-2650e4c8c16a8034a5d3dfec358c9021}},
-  note={Notion Blog},
-  year={2025}
+@misc{wang2025aspoasymmetricimportancesampling,
+      title={ASPO: Asymmetric Importance Sampling Policy Optimization}, 
+      author={Jiakang Wang and Runze Liu and Lei Lin and Wenping Hu and Xiu Li and Fuzheng Zhang and Guorui Zhou and Kun Gai},
+      year={2025},
+      eprint={2510.06062},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2510.06062}, 
 }
 ```
 
