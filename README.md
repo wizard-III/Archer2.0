@@ -199,14 +199,11 @@ Note: Please update the path parameters in the scripts above as needed.
 
 Please cite the following:
 ```bibtex
-@misc{wang2025aspoasymmetricimportancesampling,
-      title={ASPO: Asymmetric Importance Sampling Policy Optimization}, 
-      author={Jiakang Wang and Runze Liu and Lei Lin and Wenping Hu and Xiu Li and Fuzheng Zhang and Guorui Zhou and Kun Gai},
-      year={2025},
-      eprint={2510.06062},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2510.06062}, 
+@article{wang2025aspo,
+  title={Aspo: Asymmetric importance sampling policy optimization},
+  author={Wang, Jiakang and Liu, Runze and Lin, Lei and Hu, Wenping and Li, Xiu and Zhang, Fuzheng and Zhou, Guorui and Gai, Kun},
+  journal={arXiv preprint arXiv:2510.06062},
+  year={2025}
 }
 ```
 
